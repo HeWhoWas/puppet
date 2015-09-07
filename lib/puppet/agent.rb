@@ -32,8 +32,11 @@ class Puppet::Agent
       Puppet.notice "Run of #{client_class} already in progress; skipping  (#{lockfile_path} exists)"
       return
     end
-    if disabled?
+    if disabled? && ! client_options.include?("noop")
       Puppet.notice "Skipping run of #{client_class}; administratively disabled (Reason: '#{disable_message}');\nUse 'puppet agent --enable' to re-enable."
+      return
+    elsif disabled? && client_options.include?("noop")
+      Puppet.notice "Allowing dry run of #{client_class}; administratively disabled (Reason: '#{disable_message}');"
       return
     end
 
